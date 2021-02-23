@@ -47,29 +47,39 @@ namespace GTA_V_Phoenix_Handling_Editor
                     // No file opened, dialog closed or error
                     break;
                 default:
-                    // gay!!
+                    // Eimas er gey?!!
                     break;
             }
         }
         private async void StartHandlingOpen()
         {
             string modelName = xmlModelName_input.Text;
-            PhxHandling handXml = await Task.Run(() => ReadXML(curFileName, modelName));
-            DisplayNodes(handXml);
+            Task<PhxHandling> handXml = null;
+            try
+            {
+                handXml = await Task.Factory.StartNew(() => ReadXML(curFileName, modelName));
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.StackTrace);
+            }
+            while (!handXml.IsCompleted)
+            {
+                continue;
+            }
+            DisplayNodes(handXml.Result);
         }
         private async Task<PhxHandling> ReadXML(string fileName, string modelName)
         {
             phxHandling = new PhxHandling();
-            phxHandling.hello = "Hello!";
-            MessageBox.Show(phxHandling.hello);
-            MessageBox.Show(fileName);
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.Async = true;
 
             Dictionary<string, string> nodes = new Dictionary<string, string>();
             string tempPlacer = null;
-            string curNode = null;
             bool isAllFound = false;
+            bool isStarted = false;
+            string curNode = null;
             try
             {
                 using (FileStream fs = new FileStream(fileName, FileMode.Open))
@@ -78,24 +88,29 @@ namespace GTA_V_Phoenix_Handling_Editor
                     {
                         while (await reader.ReadAsync())
                         {
+                            if (isAllFound)
+                                break;
                             switch (reader.NodeType)
                             {
                                 case XmlNodeType.Element:
-                                    if (isAllFound) break;
+                                    if (isStarted) tempPlacer += $"&{reader.Name}";
                                     curNode = reader.Name;
-                                    if (reader.Name.ToLower() == "modelname")
-                                        break;
-                                    tempPlacer += $"&{reader.Name}";
                                     break;
                                 case XmlNodeType.Text:
-                                    if (isAllFound) break;
-                                    tempPlacer += $",{await reader.GetValueAsync()}";
+                                    //MessageBox.Show($"End element: {isAllFound} | Node: {await reader.GetValueAsync()}");
+                                    if (curNode.ToLower() == "modelname" && isStarted == false)
+                                    {
+                                        isStarted = (await reader.GetValueAsync() == modelName);
+                                        break;
+                                    }
+                                    if(isStarted) tempPlacer += $",{await reader.GetValueAsync()}";
                                     break;
                                 case XmlNodeType.EndElement:
-                                    if (isAllFound) break;
-                                    if (!reader.Name.ToLower().Equals("item"))
-                                        break;
-                                    else isAllFound = true;
+                                    if ((reader.Name.ToLower() == "item" && curNode.ToLower() != "item") && isStarted == true)
+                                    {
+                                        isAllFound = true;
+                                        isStarted = false;
+                                    }
                                     break;
                                 default:
                                     break;
@@ -107,31 +122,69 @@ namespace GTA_V_Phoenix_Handling_Editor
                 string[] tempPlaceerArr = tempPlacer.Split('&');
                 foreach (string node in tempPlaceerArr)
                 {
-                    MessageBox.Show(node);
+                    //MessageBox.Show(node);
                     try
                     {
                         string[] tempNodeArr = node.Split(',');
                         nodes.Add(tempNodeArr[0], tempNodeArr[1]);
                     }
-                    catch
+                    catch(Exception e)
                     {
-                        //
+                        //MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
                     }
                 }
             }
             catch(Exception e)
             {
-                MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
+                //MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
             }
             phxHandling.handlingNodes = nodes;
+            phxHandling.hello = "YOO!";
             return phxHandling;
         }
 
-        private void DisplayNodes(PhxHandling handlingNodes)
+        private void DisplayNodes(PhxHandling phxHand)
         {
-            foreach(Dictionary<string, string> node in handlingNodes.handlingNodes)
+            int irow = 0;
+            MessageBox.Show(phxHand.hello);
+            foreach(string key in phxHand.handlingNodes.Keys)
             {
+                irow += 1;
+                //MessageBox.Show(key);
+                string value = null;
+                try
+                {
+                    if (phxHand.handlingNodes.TryGetValue(key, out value))
+                    {
+                        Label keyLbl = new Label();
+                        keyLbl.Content = key;
+                        keyLbl.FontSize = 17;
+                        keyLbl.FontWeight = FontWeights.Bold;
+                        keyLbl.Foreground = new SolidColorBrush(Colors.Green);
+                        keyLbl.VerticalAlignment = VerticalAlignment.Top;
 
+                        TextBox valueBox = new TextBox();
+                        valueBox.Text = value;
+                        valueBox.FontSize = 17;
+                        valueBox.FontWeight = FontWeights.Bold;
+                        valueBox.Foreground = new SolidColorBrush(Colors.Green);
+                        valueBox.VerticalAlignment = VerticalAlignment.Top;
+
+                        RowDefinition rowDefinition = new RowDefinition();
+                        rowDefinition.Height = new GridLength();
+                        nodesGrid.RowDefinitions.Add(rowDefinition);
+                        nodesGrid.Children.Add(keyLbl);
+                        Grid.SetRow(keyLbl, irow);
+                        Grid.SetColumn(keyLbl, 0);
+                        nodesGrid.Children.Add(valueBox);
+                        Grid.SetRow(valueBox, irow);
+                        Grid.SetColumn(valueBox, 1);
+                    }
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
+                }
             }
         }
 

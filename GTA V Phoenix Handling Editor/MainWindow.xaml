@@ -10,15 +10,19 @@
         <Button x:Name="openFile_btn" Content="Open File" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="openFile_btn_Click"/>
         <Label x:Name="openFile_label" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,7,0,0"/>
         <TextBox x:Name="xmlModelName_input" HorizontalAlignment="Left" Height="22" Margin="10,42,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" TextChanged="xmlModelName_input_TextChanged" KeyDown="xmlModelName_input_KeyDown"/>
-        <Grid x:Name="nodesGrid" Margin="10,69,10,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-        </Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,69,0,0">
+            <Grid Name="nodesGrid" Background="LightSteelBlue" ShowGridLines="True" Width="auto" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" RenderTransformOrigin="0.5,0.5" Canvas.Left="10" ClipToBounds="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="45"/>
+                </Grid.RowDefinitions>
+                <Label FontSize="20" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">Key</Label>
+                <Label FontSize="20" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Value</Label>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </Window>
