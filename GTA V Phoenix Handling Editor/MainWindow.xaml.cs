@@ -31,7 +31,7 @@ namespace GTA_V_Phoenix_Handling_Editor
             InitializeComponent();
         }
 
-        private async void openFile_btn_Click(object sender, RoutedEventArgs e)
+        private void openFile_btn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Multiselect = false;
@@ -75,8 +75,7 @@ namespace GTA_V_Phoenix_Handling_Editor
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.Async = true;
 
-            Dictionary<string, string> nodes = new Dictionary<string, string>();
-            string tempPlacer = null;
+            string nodes = null;
             bool isAllFound = false;
             bool isStarted = false;
             string curNode = null;
@@ -93,7 +92,7 @@ namespace GTA_V_Phoenix_Handling_Editor
                             switch (reader.NodeType)
                             {
                                 case XmlNodeType.Element:
-                                    if (isStarted) tempPlacer += $"&{reader.Name}";
+                                    if (isStarted) nodes += $"&{reader.Name}";
                                     curNode = reader.Name;
                                     break;
                                 case XmlNodeType.Text:
@@ -103,7 +102,7 @@ namespace GTA_V_Phoenix_Handling_Editor
                                         isStarted = (await reader.GetValueAsync() == modelName);
                                         break;
                                     }
-                                    if(isStarted) tempPlacer += $",{await reader.GetValueAsync()}";
+                                    if(isStarted) nodes += $",{await reader.GetValueAsync()}";
                                     break;
                                 case XmlNodeType.EndElement:
                                     if ((reader.Name.ToLower() == "item" && curNode.ToLower() != "item") && isStarted == true)
@@ -118,72 +117,51 @@ namespace GTA_V_Phoenix_Handling_Editor
                         }
                     }
                 }
-
-                string[] tempPlaceerArr = tempPlacer.Split('&');
-                foreach (string node in tempPlaceerArr)
-                {
-                    //MessageBox.Show(node);
-                    try
-                    {
-                        string[] tempNodeArr = node.Split(',');
-                        nodes.Add(tempNodeArr[0], tempNodeArr[1]);
-                    }
-                    catch(Exception e)
-                    {
-                        //MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
-                    }
-                }
             }
             catch(Exception e)
             {
-                //MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
+                MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
             }
             phxHandling.handlingNodes = nodes;
-            phxHandling.hello = "YOO!";
             return phxHandling;
         }
 
         private void DisplayNodes(PhxHandling phxHand)
         {
             int irow = 0;
-            MessageBox.Show(phxHand.hello);
-            foreach(string key in phxHand.handlingNodes.Keys)
+            string[] nodes = phxHand.handlingNodes.Split('&');
+            foreach (string node in nodes)
             {
                 irow += 1;
-                //MessageBox.Show(key);
-                string value = null;
-                try
-                {
-                    if (phxHand.handlingNodes.TryGetValue(key, out value))
-                    {
-                        Label keyLbl = new Label();
-                        keyLbl.Content = key;
-                        keyLbl.FontSize = 17;
-                        keyLbl.FontWeight = FontWeights.Bold;
-                        keyLbl.Foreground = new SolidColorBrush(Colors.Green);
-                        keyLbl.VerticalAlignment = VerticalAlignment.Top;
 
-                        TextBox valueBox = new TextBox();
-                        valueBox.Text = value;
-                        valueBox.FontSize = 17;
-                        valueBox.FontWeight = FontWeights.Bold;
-                        valueBox.Foreground = new SolidColorBrush(Colors.Green);
-                        valueBox.VerticalAlignment = VerticalAlignment.Top;
-
-                        RowDefinition rowDefinition = new RowDefinition();
-                        rowDefinition.Height = new GridLength();
-                        nodesGrid.RowDefinitions.Add(rowDefinition);
-                        nodesGrid.Children.Add(keyLbl);
-                        Grid.SetRow(keyLbl, irow);
-                        Grid.SetColumn(keyLbl, 0);
-                        nodesGrid.Children.Add(valueBox);
-                        Grid.SetRow(valueBox, irow);
-                        Grid.SetColumn(valueBox, 1);
-                    }
-                }
-                catch(Exception e)
+                string[] tempNodeArr = node.Split(',');
+                if (tempNodeArr.Length > 1)
                 {
-                    MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
+                    string key = tempNodeArr[0];
+                    string value = tempNodeArr[1];
+                    Label keyLbl = new Label();
+                    keyLbl.Content = key;
+                    keyLbl.FontSize = 17;
+                    keyLbl.FontWeight = FontWeights.Bold;
+                    keyLbl.Foreground = new SolidColorBrush(Colors.Green);
+                    keyLbl.VerticalAlignment = VerticalAlignment.Top;
+
+                    TextBox valueBox = new TextBox();
+                    valueBox.Text = value;
+                    valueBox.FontSize = 17;
+                    valueBox.FontWeight = FontWeights.Bold;
+                    valueBox.Foreground = new SolidColorBrush(Colors.Green);
+                    valueBox.VerticalAlignment = VerticalAlignment.Top;
+
+                    RowDefinition rowDefinition = new RowDefinition();
+                    rowDefinition.Height = new GridLength();
+                    nodesGrid.RowDefinitions.Add(rowDefinition);
+                    nodesGrid.Children.Add(keyLbl);
+                    Grid.SetRow(keyLbl, irow);
+                    Grid.SetColumn(keyLbl, 0);
+                    nodesGrid.Children.Add(valueBox);
+                    Grid.SetRow(valueBox, irow);
+                    Grid.SetColumn(valueBox, 1);
                 }
             }
         }
@@ -231,7 +209,6 @@ namespace GTA_V_Phoenix_Handling_Editor
 
     public struct PhxHandling
     {
-        public string hello;
-        public Dictionary<string, string> handlingNodes;
+        public string handlingNodes;
     }
 }

@@ -13,3 +13,18 @@ C:\Users\olean\source\repos\GTA V Phoenix Handling Editor\GTA V Phoenix Handling
 C:\Users\olean\source\repos\GTA V Phoenix Handling Editor\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.csproj.CoreCompileInputs.cache
 C:\Users\olean\source\repos\GTA V Phoenix Handling Editor\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.exe
 C:\Users\olean\source\repos\GTA V Phoenix Handling Editor\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.pdb
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\bin\Debug\GTA V Phoenix Handling Editor.exe.config
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\bin\Debug\GTA V Phoenix Handling Editor.exe
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\bin\Debug\GTA V Phoenix Handling Editor.pdb
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.csprojAssemblyReference.cache
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\MainWindow.g.cs
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\App.g.cs
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor_MarkupCompile.cache
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor_MarkupCompile.lref
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\MainWindow.baml
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.g.resources
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA_V_Phoenix_Handling_Editor.Properties.Resources.resources
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.csproj.GenerateResource.cache
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.csproj.CoreCompileInputs.cache
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.exe
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.pdb
