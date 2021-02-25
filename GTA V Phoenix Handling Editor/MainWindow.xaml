@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GTA_V_Phoenix_Handling_Editor"
         mc:Ignorable="d"
-        Title="Phoenix Handling Editor" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Title="Phoenix Handling Editor" Height="450" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Grid>
         <Button x:Name="openFile_btn" Content="Open File" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="openFile_btn_Click"/>
         <Label x:Name="openFile_label" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,7,0,0"/>
-        <TextBox x:Name="xmlModelName_input" HorizontalAlignment="Left" Height="22" Margin="10,42,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" TextChanged="xmlModelName_input_TextChanged" KeyDown="xmlModelName_input_KeyDown"/>
+        <TextBox x:Name="xmlModelName_input" HorizontalAlignment="Left" Height="22" Margin="10,42,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="xmlModelName_input_TextChanged" KeyDown="xmlModelName_input_KeyDown" Padding="1"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,69,0,0">
             <Grid Name="nodesGrid" Background="LightSteelBlue" ShowGridLines="True" Width="auto" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" RenderTransformOrigin="0.5,0.5" Canvas.Left="10" ClipToBounds="True">
                 <Grid.ColumnDefinitions>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +25,8 @@ namespace GTA_V_Phoenix_Handling_Editor
     public partial class MainWindow : Window
     {
         string curFileName;
-        PhxHandling phxHandling;
+        List<UIElement> nodeGridUIElements = new List<UIElement>();
+        public PhxHandling phxHandling;
 
         public MainWindow()
         {
@@ -47,6 +49,7 @@ namespace GTA_V_Phoenix_Handling_Editor
                     // No file opened, dialog closed or error
                     break;
                 default:
+                    // Eimas er gey?!!
                     break;
             }
         }
@@ -74,7 +77,6 @@ namespace GTA_V_Phoenix_Handling_Editor
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.Async = true;
 
-            string nodes = null;
             bool isAllFound = false;
             bool isStarted = false;
             string curNode = null;
@@ -91,17 +93,19 @@ namespace GTA_V_Phoenix_Handling_Editor
                             switch (reader.NodeType)
                             {
                                 case XmlNodeType.Element:
-                                    if (isStarted) nodes += $"&{reader.Name}";
+                                    if (isStarted)
+                                        phxHandling.handlingNodes.Add(reader.Name);
                                     curNode = reader.Name;
                                     break;
                                 case XmlNodeType.Text:
                                     //MessageBox.Show($"End element: {isAllFound} | Node: {await reader.GetValueAsync()}");
                                     if (curNode.ToLower() == "modelname" && isStarted == false)
                                     {
-                                        isStarted = (await reader.GetValueAsync() == modelName);
+                                        isStarted = (reader.Value == modelName);
                                         break;
                                     }
-                                    if(isStarted) nodes += $",{await reader.GetValueAsync()}";
+                                    if (isStarted)
+                                        phxHandling.handlingNodes.Add(reader.Value);
                                     break;
                                 case XmlNodeType.EndElement:
                                     if ((reader.Name.ToLower() == "item" && curNode.ToLower() != "item") && isStarted == true)
@@ -121,24 +125,33 @@ namespace GTA_V_Phoenix_Handling_Editor
             {
                 MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
             }
-            phxHandling.handlingNodes = nodes;
             return phxHandling;
         }
 
         private void DisplayNodes(PhxHandling phxHand)
         {
             int irow = 0;
-            string[] nodes = phxHand.handlingNodes.Split('&');
-            foreach (string node in nodes)
+            if (nodeGridUIElements.Count > 0)
             {
-                irow += 1;
-
-                string[] tempNodeArr = node.Split(',');
+                foreach(UIElement element in nodeGridUIElements)
+                {
+                    nodesGrid.Children.Remove(element);
+                }
+            }
+            nodeGridUIElements.Clear();
+            nodesGrid.RowDefinitions.Clear();
+            Grid.SetRow(new Label(), 0);
+            foreach (string node in phxHand.handlingNodes.GetNodes())
+            {
+                string[] tempNodeArr = node.Split(new string[] { phxHand.handlingNodes.keyValueSplitter }, StringSplitOptions.None);
                 if (tempNodeArr.Length > 1)
                 {
+                    #region Labels and Grid display
                     string key = tempNodeArr[0];
                     string value = tempNodeArr[1];
                     Label keyLbl = new Label();
+                    nodeGridUIElements.Add(keyLbl);
+                    keyLbl.Name = $"Keylbl{irow}";
                     keyLbl.Content = key;
                     keyLbl.FontSize = 17;
                     keyLbl.FontWeight = FontWeights.Bold;
@@ -146,6 +159,8 @@ namespace GTA_V_Phoenix_Handling_Editor
                     keyLbl.VerticalAlignment = VerticalAlignment.Top;
 
                     TextBox valueBox = new TextBox();
+                    nodeGridUIElements.Add(valueBox);
+                    valueBox.Name = $"Valuebox{irow}";
                     valueBox.Text = value;
                     valueBox.FontSize = 17;
                     valueBox.FontWeight = FontWeights.Bold;
@@ -161,40 +176,45 @@ namespace GTA_V_Phoenix_Handling_Editor
                     nodesGrid.Children.Add(valueBox);
                     Grid.SetRow(valueBox, irow);
                     Grid.SetColumn(valueBox, 1);
+                    #endregion
                 }
+                irow += 1;
             }
         }
 
         private void xmlModelName_input_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // CheckTexInput(xmlModelName_input, @"pack://application:,,,/Resources/images/placeholder-modelName.png");
+            CheckTexInput(xmlModelName_input, @"pack://application:,,,/Resources/images/placeholder-modelName.png", xmlModelName_input.Text);
         }
 
-        private void CheckTexInput(TextBox input, string path)
+        private void CheckTexInput(TextBox textBox, string path, string input = null)
         {
-            if (string.IsNullOrWhiteSpace(input.Text))
+            try
             {
-                MessageBox.Show("Humbugg");
-                // Create an ImageBrush.
-                ImageBrush textImageBrush = new ImageBrush();
-                textImageBrush.ImageSource =
-                    new BitmapImage(
-                        new Uri(path, UriKind.Relative)
-                    );
-                textImageBrush.AlignmentX = AlignmentX.Left;
-                textImageBrush.Stretch = Stretch.None;
-                // Use the brush to paint the button's background.
-                input.Background = textImageBrush;
+                if (string.IsNullOrEmpty(input))
+                {
+                    // Create an ImageBrush.
+                    ImageBrush textImageBrush = new ImageBrush();
+                    textImageBrush.ImageSource =
+                        new BitmapImage(
+                            new Uri(path, UriKind.Absolute)
+                        );
+                    textImageBrush.AlignmentX = AlignmentX.Left;
+                    textImageBrush.Stretch = Stretch.None;
+                    // Use the brush to paint the button's background.
+                    textBox.Background = textImageBrush;
+                }
+                else textBox.Background = null;
             }
-            else
+            catch (Exception e)
             {
-                input.Background = null;
+                MessageBox.Show($"Message: {e.Message}\r\n\r\nStacktrace: {e.StackTrace}");
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //CheckTexInput(xmlModelName_input, @"pack://application:,,,/Resources/images/placeholder-modelName.png");
+            CheckTexInput(xmlModelName_input, @"pack://application:,,,/Resources/images/placeholder-modelName.png");
         }
 
         private void xmlModelName_input_KeyDown(object sender, KeyEventArgs e)
@@ -206,8 +226,34 @@ namespace GTA_V_Phoenix_Handling_Editor
         }
     }
 
-    public struct PhxHandling
+    public class PhxNodes
     {
-        public string handlingNodes;
+        private string _nodeSplitter = ";&;";
+        public string nodeSplitter
+        {
+            get { return _nodeSplitter; }
+            set { _nodeSplitter = nodeSplitter; }
+        }
+        private string _keyValueSplitter = ";,;";
+        public string keyValueSplitter
+        {
+            get { return _keyValueSplitter; }
+            set { _keyValueSplitter = keyValueSplitter; }
+        }
+
+        string Raw = string.Empty;
+        public IEnumerable GetNodes()
+        {
+            return Raw.Split(new string[] { _nodeSplitter }, StringSplitOptions.None);
+        }
+        public void Add(string item)
+        {
+            Raw += (Raw.EndsWith(_keyValueSplitter)) ? $"{item}" : $"{_nodeSplitter}{item}{_keyValueSplitter}";
+        }
+    }
+
+    public class PhxHandling
+    {
+        public PhxNodes handlingNodes = new PhxNodes();
     }
 }
