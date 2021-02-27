@@ -49,7 +49,6 @@ namespace GTA_V_Phoenix_Handling_Editor
                     // No file opened, dialog closed or error
                     break;
                 default:
-                    // Eimas er gey?!!
                     break;
             }
         }
