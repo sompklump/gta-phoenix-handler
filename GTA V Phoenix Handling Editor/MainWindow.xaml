@@ -5,14 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GTA_V_Phoenix_Handling_Editor"
         mc:Ignorable="d"
-        Title="Phoenix Handling Editor" Height="450" Width="800" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
-    <Grid>
+        Title="Phoenix Handling Editor" Height="650.383" Width="1216.595" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp" Background="#FF68708B">
+    <Grid Background="#FF5B7A8F">
         <Button x:Name="openFile_btn" Content="Open File" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="openFile_btn_Click"/>
-        <Label x:Name="openFile_label" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,7,0,0"/>
-        <TextBox x:Name="xmlModelName_input" HorizontalAlignment="Left" Height="22" Margin="10,42,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="xmlModelName_input_TextChanged" KeyDown="xmlModelName_input_KeyDown" Padding="1"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,69,0,0">
-            <Grid Name="nodesGrid" Background="LightSteelBlue" ShowGridLines="True" Width="auto" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" RenderTransformOrigin="0.5,0.5" Canvas.Left="10" ClipToBounds="True">
+        <Label x:Name="openFile_label" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,7,0,0" Foreground="#FF85D6DE"/>
+        <TextBox x:Name="xmlModelName_input" HorizontalAlignment="Left" Height="22" Margin="10,42,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="xmlModelName_input_TextChanged" KeyDown="xmlModelName_input_KeyDown" BorderBrush="#FFA6B4DC" Foreground="White" VerticalContentAlignment="Center"/>
+        <ScrollViewer x:Name="gridScrollViewer" VerticalScrollBarVisibility="Auto"  HorizontalScrollBarVisibility="Auto" Margin="0,69,0,0">
+            <Grid Name="nodesGrid" Background="#FF202C3C" ShowGridLines="True" Width="auto" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" RenderTransformOrigin="0.5,0.5" Canvas.Left="10" ClipToBounds="True" MouseWheel="nodesGrid_MouseWheel">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
@@ -20,8 +21,9 @@
                     <RowDefinition Height="45"/>
                     <RowDefinition Height="45"/>
                 </Grid.RowDefinitions>
-                <Label FontSize="20" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center">Key</Label>
-                <Label FontSize="20" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">Value</Label>
+                <Label FontSize="20" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Background="#00000000" Foreground="White">Key</Label>
+                <Label FontSize="20" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White">Value</Label>
+                <Label FontSize="20" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,4" Foreground="White">Attributes</Label>
             </Grid>
         </ScrollViewer>
     </Grid>

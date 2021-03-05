@@ -24,8 +24,10 @@ namespace GTA_V_Phoenix_Handling_Editor
     /// </summary>
     public partial class MainWindow : Window
     {
+        Stack<Func<object>> undoStack = new Stack<Func<object>>();
+        bool shiftModifierIsDown = false;
         string curFileName;
-        List<UIElement> nodeGridUIElements = new List<UIElement>();
+        public List<UIElement> nodeGridUIElements = new List<UIElement>();
         public PhxHandling phxHandling;
 
         public MainWindow()
@@ -41,143 +43,19 @@ namespace GTA_V_Phoenix_Handling_Editor
             switch (dialogResult)
             {
                 case (true):
-                    openFile_label.Content = $"Open file: {ofd.FileName}";
+                    FileInfo fileInfo = new FileInfo(ofd.FileName);
+                    DirectoryInfo directoryInfo = fileInfo.Directory;
+                    openFile_label.Content = $"({directoryInfo.Root.Name.Replace("\\", string.Empty)}) {directoryInfo.Name}\\{ofd.SafeFileName}";
                     curFileName = ofd.FileName;
-                    if (!string.IsNullOrWhiteSpace(xmlModelName_input.Text)) StartHandlingOpen();
+
+                    ReadFile readFile = new ReadFile();
+                    if (!string.IsNullOrWhiteSpace(xmlModelName_input.Text)) readFile.StartHandlingOpen(xmlModelName_input.Text, curFileName);
                     break;
                 case (false):
                     // No file opened, dialog closed or error
                     break;
                 default:
                     break;
-            }
-        }
-        private async void StartHandlingOpen()
-        {
-            string modelName = xmlModelName_input.Text;
-            Task<PhxHandling> handXml = null;
-            try
-            {
-                handXml = await Task.Factory.StartNew(() => ReadXML(curFileName, modelName));
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show(e.StackTrace);
-            }
-            while (!handXml.IsCompleted)
-            {
-                continue;
-            }
-            DisplayNodes(handXml.Result);
-        }
-        private async Task<PhxHandling> ReadXML(string fileName, string modelName)
-        {
-            phxHandling = new PhxHandling();
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.Async = true;
-
-            bool isAllFound = false;
-            bool isStarted = false;
-            string curNode = null;
-            try
-            {
-                using (FileStream fs = new FileStream(fileName, FileMode.Open))
-                {
-                    using (XmlReader reader = XmlReader.Create(fs, settings))
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            if (isAllFound)
-                                break;
-                            switch (reader.NodeType)
-                            {
-                                case XmlNodeType.Element:
-                                    if (isStarted)
-                                        phxHandling.handlingNodes.Add(reader.Name);
-                                    curNode = reader.Name;
-                                    break;
-                                case XmlNodeType.Text:
-                                    //MessageBox.Show($"End element: {isAllFound} | Node: {await reader.GetValueAsync()}");
-                                    if (curNode.ToLower() == "modelname" && isStarted == false)
-                                    {
-                                        isStarted = (reader.Value == modelName);
-                                        break;
-                                    }
-                                    if (isStarted)
-                                        phxHandling.handlingNodes.Add(reader.Value);
-                                    break;
-                                case XmlNodeType.EndElement:
-                                    if ((reader.Name.ToLower() == "item" && curNode.ToLower() != "item") && isStarted == true)
-                                    {
-                                        isAllFound = true;
-                                        isStarted = false;
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
-            }
-            return phxHandling;
-        }
-
-        private void DisplayNodes(PhxHandling phxHand)
-        {
-            int irow = 0;
-            if (nodeGridUIElements.Count > 0)
-            {
-                foreach(UIElement element in nodeGridUIElements)
-                {
-                    nodesGrid.Children.Remove(element);
-                }
-            }
-            nodeGridUIElements.Clear();
-            nodesGrid.RowDefinitions.Clear();
-            Grid.SetRow(new Label(), 0);
-            foreach (string node in phxHand.handlingNodes.GetNodes())
-            {
-                string[] tempNodeArr = node.Split(new string[] { phxHand.handlingNodes.keyValueSplitter }, StringSplitOptions.None);
-                if (tempNodeArr.Length > 1)
-                {
-                    #region Labels and Grid display
-                    string key = tempNodeArr[0];
-                    string value = tempNodeArr[1];
-                    Label keyLbl = new Label();
-                    nodeGridUIElements.Add(keyLbl);
-                    keyLbl.Name = $"Keylbl{irow}";
-                    keyLbl.Content = key;
-                    keyLbl.FontSize = 17;
-                    keyLbl.FontWeight = FontWeights.Bold;
-                    keyLbl.Foreground = new SolidColorBrush(Colors.Green);
-                    keyLbl.VerticalAlignment = VerticalAlignment.Top;
-
-                    TextBox valueBox = new TextBox();
-                    nodeGridUIElements.Add(valueBox);
-                    valueBox.Name = $"Valuebox{irow}";
-                    valueBox.Text = value;
-                    valueBox.FontSize = 17;
-                    valueBox.FontWeight = FontWeights.Bold;
-                    valueBox.Foreground = new SolidColorBrush(Colors.Green);
-                    valueBox.VerticalAlignment = VerticalAlignment.Top;
-
-                    RowDefinition rowDefinition = new RowDefinition();
-                    rowDefinition.Height = new GridLength();
-                    nodesGrid.RowDefinitions.Add(rowDefinition);
-                    nodesGrid.Children.Add(keyLbl);
-                    Grid.SetRow(keyLbl, irow);
-                    Grid.SetColumn(keyLbl, 0);
-                    nodesGrid.Children.Add(valueBox);
-                    Grid.SetRow(valueBox, irow);
-                    Grid.SetColumn(valueBox, 1);
-                    #endregion
-                }
-                irow += 1;
             }
         }
 
@@ -207,7 +85,7 @@ namespace GTA_V_Phoenix_Handling_Editor
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Message: {e.Message}\r\n\r\nStacktrace: {e.StackTrace}");
+                MessageBox.Show($"Message: {e.Message}\r\n\r\nStack trace: {e.StackTrace}");
             }
         }
 
@@ -220,39 +98,36 @@ namespace GTA_V_Phoenix_Handling_Editor
         {
             if(e.Key == Key.Enter)
             {
-                if (!string.IsNullOrWhiteSpace(curFileName)) StartHandlingOpen();
+                ReadFile readFile = new ReadFile();
+                if (!string.IsNullOrWhiteSpace(curFileName)) readFile.StartHandlingOpen(xmlModelName_input.Text, curFileName);
             }
         }
-    }
 
-    public class PhxNodes
-    {
-        private string _nodeSplitter = ";&;";
-        public string nodeSplitter
+        private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            get { return _nodeSplitter; }
-            set { _nodeSplitter = nodeSplitter; }
-        }
-        private string _keyValueSplitter = ";,;";
-        public string keyValueSplitter
-        {
-            get { return _keyValueSplitter; }
-            set { _keyValueSplitter = keyValueSplitter; }
+            if (e.Key == Key.LeftShift)
+                shiftModifierIsDown = true;
         }
 
-        string Raw = string.Empty;
-        public IEnumerable GetNodes()
+        private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            return Raw.Split(new string[] { _nodeSplitter }, StringSplitOptions.None);
+            if (e.Key == Key.LeftShift)
+                shiftModifierIsDown = false;
         }
-        public void Add(string item)
-        {
-            Raw += (Raw.EndsWith(_keyValueSplitter)) ? $"{item}" : $"{_nodeSplitter}{item}{_keyValueSplitter}";
-        }
-    }
 
-    public class PhxHandling
-    {
-        public PhxNodes handlingNodes = new PhxNodes();
+        private void nodesGrid_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+            if (shiftModifierIsDown && gridScrollViewer.ScrollableWidth > 0)
+            {
+                if (e.Delta > 0) gridScrollViewer.LineLeft();
+                else gridScrollViewer.LineRight();
+            }
+            else
+            {
+                if (e.Delta > 0) gridScrollViewer.LineUp();
+                else gridScrollViewer.LineDown();
+            }
+        }
     }
 }

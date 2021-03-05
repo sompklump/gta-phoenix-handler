@@ -28,3 +28,5 @@ C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Ed
 C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.csproj.CoreCompileInputs.cache
 C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.exe
 C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\GTA V Phoenix Handling Editor.pdb
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\ProgressWaiter.g.cs
+C:\Users\Cyber-Klump\source\repos\Gta Phoenix Handling\GTA V Phoenix Handling Editor\obj\Debug\ProgressWaiter.baml
